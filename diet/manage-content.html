@@ -1,0 +1,35 @@
+// Inside your <script type="module">
+import { db } from '../js/config/firebase-config.js';
+import { getAIRecommendation } from '../js/services/ai-engine.js';
+import { collection, query, where, getDocs, orderBy, limit } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+
+async function fetchTraining() {
+    // 1. Get latest metrics for AI decision
+    const qMetrics = query(collection(db, "metrics"), orderBy("timestamp", "desc"), limit(1));
+    const mSnap = await getDocs(qMetrics);
+    
+    if (mSnap.empty) return;
+
+    // 2. Run AI Rule Engine
+    const decision = getAIRecommendation(mSnap.docs[0].data());
+    
+    // 3. FETCH FROM DATABASE
+    // We look specifically for the category decided by the AI
+    const qContent = query(
+        collection(db, "content"), 
+        where("category", "==", decision.category),
+        orderBy("publishedAt", "desc"), 
+        limit(1)
+    );
+
+    const cSnap = await getDocs(qContent);
+
+    if (!cSnap.empty) {
+        const data = cSnap.docs[0].data();
+        document.getElementById('video-title').innerText = data.title;
+        document.getElementById('video-link').href = data.url;
+        document.getElementById('content-area').style.display = 'block';
+    } else {
+        document.getElementById('video-title').innerText = "DIET hasn't uploaded a video for " + decision.category + " yet.";
+    }
+}

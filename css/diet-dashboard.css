@@ -1,0 +1,32 @@
+.container {
+    max-width: 1000px;
+    margin: 40px auto;
+    padding: 20px;
+}
+
+.stats {
+    display: flex;
+    justify-content: space-around;
+    margin: 20px 0;
+}
+
+.stats div {
+    text-align: center;
+}
+
+.feedback-card {
+    background: #e0e5ec;
+    padding: 15px;
+    margin-bottom: 12px;
+    border-radius: 12px;
+    box-shadow: inset 4px 4px 8px #a3b1c6;
+}
+
+.feedback-card small {
+    color: #555;
+}
+
+.muted {
+    text-align: center;
+    color: #777;
+}

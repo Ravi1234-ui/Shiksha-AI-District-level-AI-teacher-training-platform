@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Classroom Metrics | Shiksha AI</title>
+    <link rel="stylesheet" href="../css/dashboard.css">
+</head>
+<body>
+
+<div class="container">
+<div class="card">
+
+<h2>📊 Classroom Insights</h2>
+<p>Please provide accurate information so AI can recommend the best training.</p>
+
+<!-- ================= BASIC METRICS ================= -->
+
+<label for="att">Average Attendance (%)</label>
+<input type="number" id="att" min="0" max="100" placeholder="e.g. 65" required>
+
+<label for="marks">Average Student Marks (%)</label>
+<input type="number" id="marks" min="0" max="100" placeholder="e.g. 45" required>
+
+<!-- ================= PROBLEMS ================= -->
+
+<h3>🚩 Observed Classroom Problems</h3>
+
+<label>
+    <input type="checkbox" class="prob" value="language_barrier">
+    Language Barrier (students struggle with medium of instruction)
+</label><br>
+
+<label>
+    <input type="checkbox" class="prob" value="absenteeism">
+    High Absenteeism
+</label><br>
+
+<label>
+    <input type="checkbox" class="prob" value="low_engagement">
+    Low Student Engagement
+</label>
+
+<!-- ================= ADVANCED SIGNALS ================= -->
+
+<h3>🧠 Teaching & Classroom Environment</h3>
+
+<label for="engagement">Overall Student Engagement Level</label>
+<select id="engagement">
+    <option value="high">High</option>
+    <option value="medium">Medium</option>
+    <option value="low">Low</option>
+</select>
+
+<label for="confidence">Your Teaching Confidence Level</label>
+<select id="confidence">
+    <option value="high">High</option>
+    <option value="medium">Medium</option>
+    <option value="low">Low</option>
+</select>
+
+<label for="resources">Availability of Teaching Resources</label>
+<select id="resources">
+    <option value="adequate">Adequate</option>
+    <option value="limited">Limited</option>
+    <option value="poor">Very Poor</option>
+</select>
+
+<label for="digital">Comfort Level with Digital Tools</label>
+<select id="digital">
+    <option value="comfortable">Comfortable</option>
+    <option value="basic">Basic</option>
+    <option value="not_comfortable">Not Comfortable</option>
+</select>
+
+<label for="syllabus">Syllabus Completion Status</label>
+<select id="syllabus">
+    <option value="on_time">On Time</option>
+    <option value="delayed">Delayed</option>
+</select>
+
+<!-- ================= SUBMIT ================= -->
+
+<button class="btn btn-success" id="saveBtn">
+    Analyze & Get Training
+</button>
+
+</div>
+</div>
+
+<script type="module">
+import { db, auth } from '../js/config/firebase-init.js';
+import { addDoc, collection, serverTimestamp, getDoc, doc } 
+from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+
+document.getElementById("saveBtn").onclick = async () => {
+
+    if (!auth.currentUser) {
+        alert("User not authenticated");
+        return;
+    }
+
+    if (!att.value || !marks.value) {
+        alert("Please fill Attendance and Marks");
+        return;
+    }
+
+    const problems = [...document.querySelectorAll(".prob:checked")]
+        .map(p => p.value);
+
+    const userDoc = await getDoc(doc(db, "users", auth.currentUser.uid));
+    const district = userDoc.data().district;
+
+    const metricsData = {
+        teacherId: auth.currentUser.uid,
+        district: district.toLowerCase(),
+
+        attendance: Number(att.value),
+        marks: Number(marks.value),
+
+        problems: problems,
+
+        engagement: engagement.value,
+        confidence: confidence.value,
+        resources: resources.value,
+        digital: digital.value,
+        syllabus: syllabus.value,
+
+        timestamp: serverTimestamp()
+    };
+
+    try {
+        await addDoc(collection(db, "metrics"), metricsData);
+        alert("Data saved successfully!");
+        window.location.href = "ai-recommendation.html";
+    } catch (err) {
+        console.error(err);
+        alert("Error saving data. Check console.");
+    }
+};
+</script>
+
+</body>
+</html>

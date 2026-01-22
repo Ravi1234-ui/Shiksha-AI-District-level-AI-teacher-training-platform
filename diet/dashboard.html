@@ -1,0 +1,310 @@
+<!-- <!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>DIET Governance | Shiksha AI</title>
+    <link rel="stylesheet" href="../css/diet.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+
+    <nav>
+        <span>SHIKSHA AI: DIET PANEL</span> 
+        <button class="btn" style="width: auto; margin: 0; padding: 10px 25px;" onclick="logout()">Logout</button>
+    </nav>
+    
+    <div class="container">
+        <div class="card">
+            <h3>Module Management</h3>
+            <p>Upload training URLs that the AI will recommend to teachers based on their needs.</p>
+            
+            <label>Problem Category (AI Mapping)</label>
+            <select id="up-cat">
+                <option value="Linguistic">Linguistic Support (Language Barrier)</option>
+                <option value="Community">Community Engagement (Low Attendance)</option>
+                <option value="Pedagogy">General Pedagogy (Standard Issues)</option>
+            </select>
+            
+            <label>Module Title</label>
+            <input type="text" id="up-title" placeholder="e.g., Hindi Bridge Course Level 1">
+            
+            <label>YouTube / Training URL</label>
+            <input type="text" id="up-url" placeholder="https://youtube.com/watch?v=...">
+            
+            <button class="btn btn-success" onclick="uploadContent()">Publish Module</button>
+        </div>
+
+        <div class="card">
+            <h3>Teacher Feedback Analytics</h3>
+            <p>Real-time insights from teachers who have completed their training cycles.</p>
+            
+            <div id="stats-summary" style="display: flex; justify-content: space-around; margin-top: 20px;">
+                <div class="card" style="padding: 15px; text-align: center; flex: 1; margin: 5px;">
+                    <h2 id="total-feedbacks">0</h2>
+                    <span>Feedbacks Received</span>
+                </div>
+                <div class="card" style="padding: 15px; text-align: center; flex: 1; margin: 5px;">
+                    <h2 id="avg-rating">0</h2>
+                    <span>Avg. Module Rating</span>
+                </div>
+            </div>
+
+            <div id="feedback-list" style="margin-top: 30px;">
+                <p style="text-align: center; color: #888;">Fetching recent logs...</p>
+            </div>
+        </div>
+    </div>
+
+    <script type="module">
+        import { db, auth } from '../js/config/firebase-config.js';
+        import { collection, addDoc, getDocs, query, orderBy, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+        import { signOut } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
+
+     
+
+
+
+        window.publishToFirebase = async () => {
+    const cat = document.getElementById('module-cat').value;
+    const title = document.getElementById('module-title').value;
+    const url = document.getElementById('module-url').value;
+
+    // Fetch current DIET officer's district from their profile
+    const userDoc = await getDoc(doc(db, "users", auth.currentUser.uid));
+    const dietDistrict = userDoc.data().district;
+
+    try {
+        await addDoc(collection(db, "content"), {
+            category: cat,
+            title: title,
+            url: url,
+            district: dietDistrict, // <--- TARGETING ONLY THIS DISTRICT
+            publishedAt: serverTimestamp()
+        });
+        alert(`Module published for ${dietDistrict} district!`);
+        location.reload();
+    } catch (e) { alert(e.message); }
+};
+        // --- LOAD ANALYTICS LOGIC ---
+        async function loadAnalytics() {
+            const snap = await getDocs(query(collection(db, "feedback"), orderBy("timestamp", "desc")));
+            const feedbackContainer = document.getElementById('feedback-list');
+            
+            if(snap.empty) {
+                feedbackContainer.innerHTML = "<p>No feedback recorded yet.</p>";
+                return;
+            }
+
+            let totalRating = 0;
+            let listHtml = "<h4>Recent Submissions:</h4>";
+
+            snap.forEach(doc => {
+                const d = doc.data();
+                totalRating += parseInt(d.rating);
+                listHtml += `
+                    <div class="card" style="padding: 15px; margin-bottom: 10px; box-shadow: inset 4px 4px 8px #a3b1c6;">
+                        <strong>Rating: ${"⭐".repeat(d.rating)}</strong>
+                        <p style="margin: 5px 0;">"${d.comment}"</p>
+                    </div>
+                `;
+            });
+
+            document.getElementById('total-feedbacks').innerText = snap.size;
+            document.getElementById('avg-rating').innerText = (totalRating / snap.size).toFixed(1) + "/5";
+            feedbackContainer.innerHTML = listHtml;
+        }
+
+        window.logout = () => { signOut(auth).then(() => { window.location.href = "../index.html"; }); };
+        
+        loadAnalytics();
+    </script>
+</body>
+</html> 
+
+
+
+ -->
+
+
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>DIET Governance | Shiksha AI</title>
+    <link rel="stylesheet" href="../css/diet.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
+</head>
+
+<body>
+
+<nav>
+    <span>
+        SHIKSHA AI : DIET PANEL
+        <small id="display-district" style="opacity:0.7;font-size:0.8rem;"></small>
+    </span>
+    <button class="btn" onclick="logout()">Logout</button>
+</nav>
+
+<div class="container">
+
+    <!-- ================= MODULE UPLOAD ================= -->
+    <div class="card">
+        <h3>📦 Module Management</h3>
+        <p>Upload training content based on AI-identified teacher needs.</p>
+
+        <label>Problem Category (AI Mapping)</label>
+        <select id="up-cat">
+            <option value="Linguistic Support">Linguistic Support</option>
+            <option value="Community Engagement">Community Engagement</option>
+            <option value="General Pedagogy">General Pedagogy</option>
+        </select>
+
+        <label>Module Title</label>
+        <input type="text" id="up-title" placeholder="e.g. Language Support for Class 3">
+
+        <label>Training Video URL</label>
+        <input type="text" id="up-url" placeholder="https://youtube.com/...">
+
+        <button class="btn btn-success" onclick="uploadContent()">
+            Publish Module
+        </button>
+    </div>
+
+    <!-- ================= FEEDBACK ANALYTICS ================= -->
+    <div class="card">
+        <h3>📊 Teacher Feedback (District-wise)</h3>
+
+        <div class="stats">
+            <div>
+                <h2 id="total-feedbacks">0</h2>
+                <span>Total Feedback</span>
+            </div>
+            <div>
+                <h2 id="avg-rating">0</h2>
+                <span>Average Rating</span>
+            </div>
+        </div>
+
+        <div id="feedback-list">
+            <p class="muted">Loading feedback...</p>
+        </div>
+    </div>
+
+</div>
+
+<script type="module">
+import { db, auth } from '../js/config/firebase-init.js';
+import {
+    collection, addDoc, getDocs, getDoc, doc,
+    query, where, orderBy, serverTimestamp
+} from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+import { onAuthStateChanged, signOut }
+from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
+
+let userDistrict = "";
+
+/* ================= AUTH + DISTRICT ================= */
+onAuthStateChanged(auth, async (user) => {
+    if (!user) {
+        window.location.href = "../index.html";
+        return;
+    }
+
+    const userSnap = await getDoc(doc(db, "users", user.uid));
+    if (!userSnap.exists()) {
+        alert("User profile not found");
+        return;
+    }
+
+    userDistrict = userSnap.data().district.trim().toLowerCase();
+
+    document.getElementById("display-district").innerText =
+        ` | District: ${userDistrict.toUpperCase()}`;
+
+    loadAnalytics();
+});
+
+/* ================= MODULE UPLOAD ================= */
+window.uploadContent = async () => {
+    const category = document.getElementById("up-cat").value;
+    const title = document.getElementById("up-title").value.trim();
+    const url = document.getElementById("up-url").value.trim();
+
+    if (!title || !url) {
+        alert("Please fill all fields");
+        return;
+    }
+
+    try {
+        await addDoc(collection(db, "content"), {
+            category,
+            title,
+            url,
+            district: userDistrict,
+            publishedAt: serverTimestamp()
+        });
+
+        alert("Module published successfully");
+
+        document.getElementById("up-title").value = "";
+        document.getElementById("up-url").value = "";
+
+    } catch (e) {
+        alert("Upload failed: " + e.message);
+    }
+};
+
+/* ================= LOAD FEEDBACK ================= */
+async function loadAnalytics() {
+    try {
+        const q = query(
+            collection(db, "feedback"),
+            where("district", "==", userDistrict),
+            orderBy("timestamp", "desc")
+        );
+
+        const snap = await getDocs(q);
+        const list = document.getElementById("feedback-list");
+
+        if (snap.empty) {
+            list.innerHTML =
+                "<p class='muted'>No feedback received yet.</p>";
+            return;
+        }
+
+        let total = 0;
+        let html = "";
+
+        snap.forEach(docSnap => {
+            const d = docSnap.data();
+            total += Number(d.rating || 0);
+
+            html += `
+                <div class="feedback-card">
+                    <strong>${"⭐".repeat(d.rating || 0)}</strong>
+                    <p>${d.comment || ""}</p>
+                    <small>${d.teacherEmail || d.teacherName || "Teacher"}</small>
+                </div>
+            `;
+        });
+
+        document.getElementById("total-feedbacks").innerText = snap.size;
+        document.getElementById("avg-rating").innerText =
+            (total / snap.size).toFixed(1) + " / 5";
+
+        list.innerHTML = html;
+
+    } catch (e) {
+        console.error("Analytics Error:", e);
+        document.getElementById("feedback-list").innerHTML =
+            "<p class='muted'>Error loading feedback.</p>";
+    }
+}
+
+window.logout = () =>
+    signOut(auth).then(() => window.location.href = "../index.html");
+</script>
+
+</body>
+</html>

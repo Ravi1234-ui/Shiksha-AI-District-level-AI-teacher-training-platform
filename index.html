@@ -1,0 +1,338 @@
+<!-- <!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Shiksha AI | Unified Portal</title>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/style.css">
+  <style>
+    /* Quick fix for the role dropdown to match your theme */
+    select {
+      width: 100%;
+      padding: 12px;
+      margin-bottom: 15px;
+      border: 1px solid #ddd;
+      border-radius: 8px;
+      background-color: white;
+      font-family: 'Poppins', sans-serif;
+    }
+  </style>
+</head>
+<body>
+
+<div class="bg-image"></div>
+<div class="bg-overlay"></div>
+
+<div class="page">
+  <div class="info-panel">
+    <h1>Shiksha AI</h1>
+    <p>AI-Driven Adaptive Teacher Training<br>& Mentorship Platform for India</p>
+    <ul>
+      <li>✔ Designed for Indian Schools</li>
+      <li>✔ DIET & SCERT Aligned</li>
+      <li>✔ Secure & Explainable AI</li>
+    </ul>
+    <span>Government-Friendly • Trusted • Scalable</span>
+  </div>
+
+  <div class="auth-card">
+    <div class="tabs">
+      <button id="tab-login" class="active" onclick="toggleAuth('login')">Login</button>
+      <button id="tab-signup" onclick="toggleAuth('signup')">Sign Up</button>
+    </div>
+
+    <div id="login-form" class="form active">
+      <h2>Welcome Back</h2>
+      <input type="email" id="loginEmail" placeholder="Email Address">
+      <input type="password" id="loginPassword" placeholder="Password">
+      <button class="primary-btn" onclick="login()">Login</button>
+      <p class="helper-text">Authorized teachers & officials only</p>
+    </div>
+
+    <div id="signup-form" class="form">
+      <h2>Create Account</h2>
+      <input type="text" id="regName" placeholder="Full Name">
+      <input type="email" id="regEmail" placeholder="Email Address">
+      
+      <select id="regRole">
+        <option value="" disabled selected>Select System Role</option>
+        <option value="teacher">Teacher (Classroom Level)</option>
+        <option value="diet">DIET Official (Governance Level)</option>
+      </select>
+
+      <input type="text" id="regDistrict" placeholder="District">
+      <input type="password" id="regPassword" placeholder="Create Password">
+      
+      <button class="primary-btn" onclick="register()">Register</button>
+      <p class="helper-text">Verification by DIET required for teachers</p>
+    </div>
+  </div>
+</div>
+
+<script type="module">
+  import { auth, db } from './js/config/firebase-config.js';
+  import { 
+    signInWithEmailAndPassword, 
+    createUserWithEmailAndPassword 
+  } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
+  import { doc, setDoc, getDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+
+  // Tab Switching Logic
+  window.toggleAuth = (type) => {
+    const loginForm = document.getElementById('login-form');
+    const signupForm = document.getElementById('signup-form');
+    const tabLogin = document.getElementById('tab-login');
+    const tabSignup = document.getElementById('tab-signup');
+
+    if (type === 'login') {
+      loginForm.classList.add('active');
+      signupForm.classList.remove('active');
+      tabLogin.classList.add('active');
+      tabSignup.classList.remove('active');
+    } else {
+      signupForm.classList.add('active');
+      loginForm.classList.remove('active');
+      tabSignup.classList.add('active');
+      tabLogin.classList.remove('active');
+    }
+  };
+
+
+
+window.register = async () => {
+    
+  const name = document.getElementById('regName').value;
+  const email = document.getElementById('regEmail').value;
+  const role = document.getElementById('regRole').value;
+  const district = document.getElementById('regDistrict').value;
+  const password = document.getElementById('regPassword').value;
+
+  if (!name || !email || !role || !password) {
+    alert("Please fill all fields!");
+    return;
+  }
+
+  try {
+    // 1. Create the Account
+    const cred = await createUserWithEmailAndPassword(auth, email, password);
+    
+    // 2. Save the Profile to Firestore
+    await setDoc(doc(db, "users", cred.user.uid), {
+      name,
+      email,
+      role,
+      district,
+      isVerified: role === 'diet' ? true : false,
+      createdAt: new Date()
+    });
+
+    alert("Registration Successful! Redirecting to your dashboard...");
+
+    // 3. IMMEDIATE REDIRECT (No need to login again)
+    if (role === 'teacher') {
+        window.location.href = "teacher/dashboard.html";
+    } else {
+        window.location.href = "diet/dashboard.html";
+    }
+
+  } catch (e) {
+    alert("Registration Failed: " + e.message);
+  }
+};
+
+  // LOGIN FUNCTION
+  window.login = async () => {
+    const email = document.getElementById('loginEmail').value;
+    const password = document.getElementById('loginPassword').value;
+
+    try {
+      const cred = await signInWithEmailAndPassword(auth, email, password);
+      
+      // Fetch role to redirect correctly
+      const userDoc = await getDoc(doc(db, "users", cred.user.uid));
+      const userData = userDoc.data();
+
+      if (userData.role === 'teacher') {
+          window.location.href = "teacher/dashboard.html";
+      } else {
+          window.location.href = "diet/dashboard.html";
+      }
+    } catch (e) {
+      alert("Login Error: " + e.message);
+    }
+  };
+</script>
+
+</body>
+</html> -->
+
+
+
+
+
+
+
+
+
+
+
+
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Shiksha AI | Unified Portal</title>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/style.css">
+  <style>
+    select {
+      width: 100%;
+      padding: 12px;
+      margin-bottom: 15px;
+      border: 1px solid #ddd;
+      border-radius: 8px;
+      background-color: white;
+      font-family: 'Poppins', sans-serif;
+    }
+  </style>
+</head>
+<body>
+
+<div class="bg-image"></div>
+<div class="bg-overlay"></div>
+
+<div class="page">
+  <div class="info-panel">
+    <h1>Shiksha AI</h1>
+    <p>AI-Driven Adaptive Teacher Training<br>& Mentorship Platform for India</p>
+    <ul>
+      <li>✔ Designed for Indian Schools</li>
+      <li>✔ DIET & SCERT Aligned</li>
+      <li>✔ Secure & Explainable AI</li>
+    </ul>
+    <span>Government-Friendly • Trusted • Scalable</span>
+  </div>
+
+  <div class="auth-card">
+    <div class="tabs">
+      <button id="tab-login" class="active" onclick="toggleAuth('login')">Login</button>
+      <button id="tab-signup" onclick="toggleAuth('signup')">Sign Up</button>
+    </div>
+
+    <div id="login-form" class="form active">
+      <h2>Welcome Back</h2>
+      <input type="email" id="loginEmail" placeholder="Email Address">
+      <input type="password" id="loginPassword" placeholder="Password">
+      <button class="primary-btn" onclick="login()">Login</button>
+      <p class="helper-text">Authorized teachers & officials only</p>
+    </div>
+
+    <div id="signup-form" class="form">
+      <h2>Create Account</h2>
+      <input type="text" id="regName" placeholder="Full Name">
+      <input type="email" id="regEmail" placeholder="Email Address">
+      
+      <select id="regRole">
+        <option value="" disabled selected>Select System Role</option>
+        <option value="teacher">Teacher (Classroom Level)</option>
+        <option value="diet">DIET Official (Governance Level)</option>
+      </select>
+
+      <input type="text" id="regDistrict" placeholder="Enter Your District (e.g. Bhopal)">
+      
+      <input type="password" id="regPassword" placeholder="Create Password">
+      
+      <button class="primary-btn" onclick="register()">Register</button>
+      <p class="helper-text">Verification based on District jurisdiction</p>
+    </div>
+  </div>
+</div>
+
+<script type="module">
+  import { auth, db } from './js/config/firebase-init.js';
+  import { 
+    signInWithEmailAndPassword, 
+    createUserWithEmailAndPassword 
+  } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
+  import { doc, setDoc, getDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+
+  window.toggleAuth = (type) => {
+    const loginForm = document.getElementById('login-form');
+    const signupForm = document.getElementById('signup-form');
+    const tabLogin = document.getElementById('tab-login');
+    const tabSignup = document.getElementById('tab-signup');
+
+    if (type === 'login') {
+      loginForm.classList.add('active');
+      signupForm.classList.remove('active');
+      tabLogin.classList.add('active');
+      tabSignup.classList.remove('active');
+    } else {
+      signupForm.classList.add('active');
+      loginForm.classList.remove('active');
+      tabSignup.classList.add('active');
+      tabLogin.classList.remove('active');
+    }
+  };
+
+  // UPDATED REGISTER FUNCTION (PHASE 1)
+  window.register = async () => {
+    const name = document.getElementById('regName').value;
+    const email = document.getElementById('regEmail').value;
+    const role = document.getElementById('regRole').value;
+    const district = document.getElementById('regDistrict').value;
+    const password = document.getElementById('regPassword').value;
+
+    if (!name || !email || !role || !district || !password) {
+      alert("Please fill all fields including District!");
+      return;
+    }
+
+    try {
+      const cred = await createUserWithEmailAndPassword(auth, email, password);
+      
+      // PHASE 1: Store District in lowercase for accurate filtering
+      await setDoc(doc(db, "users", cred.user.uid), {
+        name,
+        email,
+        role,
+        district: district.toLowerCase().trim(),
+        createdAt: new Date()
+      });
+
+      alert("Registration Successful! Redirecting...");
+      
+      // Immediate Redirect based on Role
+      if (role === 'teacher') {
+          window.location.href = "teacher/dashboard.html";
+      } else {
+          window.location.href = "diet/dashboard.html";
+      }
+    } catch (e) {
+      alert("Registration Failed: " + e.message);
+    }
+  };
+
+  window.login = async () => {
+    const email = document.getElementById('loginEmail').value;
+    const password = document.getElementById('loginPassword').value;
+
+    try {
+      const cred = await signInWithEmailAndPassword(auth, email, password);
+      const userDoc = await getDoc(doc(db, "users", cred.user.uid));
+      const userData = userDoc.data();
+
+      if (userData.role === 'teacher') {
+          window.location.href = "teacher/dashboard.html";
+      } else {
+          window.location.href = "diet/dashboard.html";
+      }
+    } catch (e) {
+      alert("Login Error: " + e.message);
+    }
+  };
+</script>
+
+</body>
+</html>

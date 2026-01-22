@@ -1,0 +1,247 @@
+/* ================= ROOT & THEME ================= */
+:root {
+    --bg-color: #e6ebf2;
+    --card-bg: #e6ebf2;
+
+    --primary-blue: #1f3c88;
+    --accent-blue: #3b82f6;
+    --success-green: #10b981;
+
+    --text-color: #2c2f4a;
+    --muted-text: #6b7280;
+
+    --shadow-light: #ffffff;
+    --shadow-dark: #a3b1c6;
+
+    --glass-white: rgba(255, 255, 255, 0.5);
+}
+
+/* ================= GLOBAL ================= */
+* {
+    box-sizing: border-box;
+}
+
+body {
+    background: linear-gradient(135deg, #e6ebf2, #f1f4f9);
+    font-family: 'Poppins', sans-serif;
+    color: var(--text-color);
+    margin: 0;
+    padding: 0;
+}
+
+/* ================= NAVBAR ================= */
+nav {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1.2rem 6%;
+    background: rgba(230, 235, 242, 0.85);
+    backdrop-filter: blur(12px);
+    box-shadow: 0 6px 18px rgba(0,0,0,0.08);
+    position: sticky;
+    top: 0;
+    z-index: 100;
+}
+
+nav span {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: var(--primary-blue);
+    letter-spacing: 0.5px;
+}
+
+nav small {
+    font-weight: 500;
+    color: var(--muted-text);
+}
+
+/* ================= CONTAINER ================= */
+.container {
+    max-width: 900px;
+    margin: 50px auto;
+    padding: 20px;
+}
+
+/* ================= CARD ================= */
+.card {
+    background: var(--card-bg);
+    border-radius: 26px;
+    padding: 35px;
+    margin-bottom: 45px;
+    box-shadow:
+        14px 14px 28px var(--shadow-dark),
+        -14px -14px 28px var(--shadow-light);
+    border: 1px solid var(--glass-white);
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.card:hover {
+    transform: translateY(-6px);
+    box-shadow:
+        8px 8px 20px var(--shadow-dark),
+        -8px -8px 20px var(--shadow-light);
+}
+
+/* ================= HEADINGS ================= */
+.card h2 {
+    font-size: 1.6rem;
+    margin-bottom: 10px;
+    color: var(--primary-blue);
+}
+
+.card h3 {
+    font-size: 1.25rem;
+    margin-top: 30px;
+    margin-bottom: 10px;
+    color: var(--primary-blue);
+}
+
+.card h4 {
+    margin-bottom: 8px;
+    color: var(--accent-blue);
+}
+
+/* ================= TEXT ================= */
+p {
+    color: var(--muted-text);
+    font-size: 0.95rem;
+    line-height: 1.6;
+}
+
+/* ================= FORM LABELS ================= */
+label {
+    display: block;
+    margin: 18px 0 8px 6px;
+    font-weight: 500;
+    font-size: 0.95rem;
+}
+
+/* ================= INPUTS ================= */
+input[type="number"],
+select,
+textarea {
+    width: 100%;
+    padding: 14px 16px;
+    border-radius: 14px;
+    border: none;
+    background: var(--card-bg);
+    box-shadow:
+        inset 4px 4px 8px var(--shadow-dark),
+        inset -4px -4px 8px var(--shadow-light);
+    color: var(--text-color);
+    font-size: 0.95rem;
+    outline: none;
+    transition: all 0.2s ease;
+}
+
+input:focus,
+select:focus,
+textarea:focus {
+    box-shadow:
+        inset 2px 2px 5px var(--shadow-dark),
+        inset -2px -2px 5px var(--shadow-light);
+}
+
+/* ================= TEXTAREA ================= */
+textarea {
+    min-height: 110px;
+    resize: none;
+}
+
+/* ================= BUTTONS ================= */
+.btn {
+    display: inline-block;
+    width: 100%;
+    padding: 16px;
+    margin-top: 28px;
+    border-radius: 22px;
+    border: none;
+    font-size: 1.05rem;
+    font-weight: 600;
+    color: #fff;
+    background: linear-gradient(145deg, #3b82f6, #1f3c88);
+    cursor: pointer;
+    box-shadow:
+        6px 6px 12px var(--shadow-dark),
+        -6px -6px 12px var(--shadow-light);
+    transition: all 0.2s ease;
+}
+
+.btn:hover {
+    transform: translateY(-1px);
+    filter: brightness(1.05);
+}
+
+.btn:active {
+    transform: scale(0.97);
+}
+
+.btn-success {
+    background: linear-gradient(145deg, #10b981, #059669);
+}
+
+/* ================= AI EXPLANATION BOX ================= */
+#ai-explain {
+    margin-top: 25px;
+    padding: 25px;
+    border-radius: 20px;
+    background: linear-gradient(
+        145deg,
+        rgba(59, 130, 246, 0.08),
+        rgba(255, 255, 255, 0.5)
+    );
+    box-shadow:
+        inset 6px 6px 12px var(--shadow-dark),
+        inset -6px -6px 12px var(--shadow-light);
+}
+
+#ai-explain ul {
+    padding-left: 20px;
+}
+
+#ai-explain li {
+    margin-bottom: 6px;
+    font-size: 0.9rem;
+}
+
+/* ================= VIDEO BOX ================= */
+#content-box {
+    margin-top: 25px;
+    padding: 25px;
+    border-radius: 22px;
+    background: var(--card-bg);
+    box-shadow:
+        inset 8px 8px 16px var(--shadow-dark),
+        inset -8px -8px 16px var(--shadow-light);
+}
+
+/* ================= BADGES / TAGS ================= */
+.badge {
+    display: inline-block;
+    padding: 6px 12px;
+    border-radius: 12px;
+    font-size: 0.75rem;
+    font-weight: 600;
+    background: var(--accent-blue);
+    color: white;
+}
+
+/* ================= HIDDEN ================= */
+.hidden {
+    display: none !important;
+}
+
+/* ================= RESPONSIVE ================= */
+@media (max-width: 768px) {
+    .container {
+        padding: 10px;
+    }
+
+    .card {
+        padding: 25px;
+    }
+
+    nav span {
+        font-size: 1.2rem;
+    }
+}

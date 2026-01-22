@@ -1,0 +1,151 @@
+* {
+  box-sizing: border-box;
+  font-family: 'Poppins', sans-serif;
+}
+
+body {
+  margin: 0;
+  height: 100vh;
+  overflow: hidden;
+}
+
+/* ===== BACKGROUND IMAGE ===== */
+.bg-image {
+  position: fixed;
+  inset: 0;
+  background: url("../assets/images/education-bg.jpeg") center/cover no-repeat;
+  z-index: -3;
+}
+
+/* Dark overlay for readability */
+.bg-overlay {
+  position: fixed;
+  inset: 0;
+  background: linear-gradient(
+    to right,
+    rgba(15,23,42,0.85),
+    rgba(15,23,42,0.6)
+  );
+  z-index: -2;
+}
+
+/* ===== PAGE LAYOUT ===== */
+.page {
+  height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 50px;
+  padding: 40px;
+}
+
+/* ===== LEFT INFO PANEL ===== */
+.info-panel {
+  max-width: 420px;
+  color: #e0f2fe;
+}
+
+.info-panel h1 {
+  font-size: 44px;
+  margin-bottom: 10px;
+}
+
+.info-panel p {
+  color: #dbeafe;
+  line-height: 1.6;
+}
+
+.info-panel ul {
+  margin-top: 20px;
+  padding-left: 18px;
+}
+
+.info-panel li {
+  margin-bottom: 6px;
+}
+
+.info-panel span {
+  display: block;
+  margin-top: 25px;
+  font-size: 13px;
+  color: #c7d2fe;
+}
+
+/* ===== AUTH CARD (3D) ===== */
+.auth-card {
+  width: 380px;
+  background: rgba(255,255,255,0.95);
+  padding: 32px;
+  border-radius: 20px;
+  box-shadow:
+    0 20px 40px rgba(0,0,0,0.4),
+    0 40px 80px rgba(0,0,0,0.5);
+  transform: perspective(1200px) rotateY(-8deg);
+  transition: 0.4s ease;
+}
+
+.auth-card:hover {
+  transform: perspective(1200px) rotateY(0deg) scale(1.03);
+}
+
+/* Tabs */
+.tabs {
+  display: flex;
+  margin-bottom: 20px;
+}
+
+.tabs button {
+  flex: 1;
+  background: none;
+  border: none;
+  padding: 10px;
+  font-weight: 600;
+  color: #64748b;
+  cursor: pointer;
+}
+
+.tabs button.active {
+  color: #1e40af;
+  border-bottom: 2px solid #2563eb;
+}
+
+/* Forms */
+.form { display: none; }
+.form.active { display: block; }
+
+.form h2 {
+  text-align: center;
+  margin-bottom: 18px;
+}
+
+input, select {
+  width: 100%;
+  padding: 12px;
+  margin-bottom: 14px;
+  border-radius: 8px;
+  border: 1px solid #cbd5e1;
+}
+
+/* Button */
+.primary-btn {
+  width: 100%;
+  padding: 12px;
+  background: linear-gradient(135deg, #2563eb, #1e40af);
+  color: white;
+  border: none;
+  border-radius: 10px;
+  font-weight: bold;
+  cursor: pointer;
+}
+
+.primary-btn:hover {
+  box-shadow: 0 10px 20px rgba(37,99,235,0.6);
+}
+
+/* Helper */
+.helper-text {
+  margin-top: 10px;
+  font-size: 12px;
+  text-align: center;
+  color: #64748b;
+}

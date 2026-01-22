@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>AI Recommendation | Shiksha AI</title>
+
+    <!-- GLOBAL + DASHBOARD STYLE -->
+    <link rel="stylesheet" href="../css/style.css">
+    <link rel="stylesheet" href="../css/dashboard.css">
+
+    <!-- AI PAGE STYLE -->
+    <link rel="stylesheet" href="../css/ai-recommendation.css">
+</head>
+
+<body>
+
+<div class="container">
+
+    <!-- HEADER -->
+    <div class="ai-header">
+        <h2>🤖 AI-Personalised Training Recommendation</h2>
+        <p>Based on your classroom data and district-level insights</p>
+    </div>
+
+    <!-- LOADING -->
+    <div id="loading" class="ai-loading">
+        Analyzing your classroom data using explainable AI…
+    </div>
+
+    <!-- RESULT CARD -->
+    <div id="result-card" class="ai-card hidden">
+
+        <span class="ai-badge" id="priority-badge">PRIORITY</span>
+
+        <h3 id="rec-category">Category</h3>
+
+        <!-- EXPLANATION -->
+        <div class="ai-reason-box">
+            <strong>Why this recommendation?</strong>
+            <ul id="rec-reasons"></ul>
+
+            <div class="ai-confidence">
+                AI Confidence: <span id="rec-confidence"></span>%
+            </div>
+        </div>
+
+        <!-- TRAINING CONTENT -->
+        <div id="training-content" class="training-card">
+            <h4 id="module-title">Training Module</h4>
+            <a id="training-url" href="#" target="_blank" class="btn btn-success">
+                ▶ Start Training Video
+            </a>
+        </div>
+
+        <!-- NO CONTENT -->
+        <div id="no-content" class="no-content hidden">
+            DIET has not uploaded training for this category yet.
+        </div>
+
+    </div>
+
+</div>
+
+<!-- SCRIPT -->
+<script type="module">
+import { db, auth } from '../js/config/firebase-init.js';
+import { getAIRecommendation } from '../js/services/ai-engine.js';
+import {
+    collection, query, where, getDocs,
+    limit, doc, getDoc
+} from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+import { onAuthStateChanged }
+from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
+
+onAuthStateChanged(auth, async (user) => {
+
+    // 🔐 AUTH SAFE CHECK
+    if (!user) {
+        window.location.href = "../index.html";
+        return;
+    }
+
+    try {
+        /* ===========================
+           1️⃣ GET TEACHER DISTRICT
+        ============================ */
+        const userSnap = await getDoc(doc(db, "users", user.uid));
+        if (!userSnap.exists()) {
+            document.getElementById("loading").innerText =
+                "User profile not found.";
+            return;
+        }
+
+        const district = userSnap.data().district.toLowerCase();
+
+        /* ===========================
+           2️⃣ GET LATEST METRICS
+        ============================ */
+        const qMetrics = query(
+            collection(db, "metrics"),
+            where("teacherId", "==", user.uid),
+            limit(1)
+        );
+
+        const metricsSnap = await getDocs(qMetrics);
+
+        if (metricsSnap.empty) {
+            document.getElementById("loading").innerHTML = `
+                <p>No classroom metrics found.</p>
+                <button class="btn" onclick="location.href='input-metrics.html'">
+                    Submit Classroom Metrics
+                </button>
+            `;
+            return;
+        }
+
+        const metrics = metricsSnap.docs[0].data();
+
+        /* ===========================
+           3️⃣ AI DECISION
+        ============================ */
+        const ai = getAIRecommendation(metrics);
+
+        /* ===========================
+           4️⃣ UPDATE UI
+        ============================ */
+        document.getElementById("loading").style.display = "none";
+        document.getElementById("result-card").classList.remove("hidden");
+
+        document.getElementById("rec-category").innerText = ai.category;
+        document.getElementById("rec-confidence").innerText =
+            ai.confidence ?? "—";
+        document.getElementById("priority-badge").innerText =
+            (ai.priority || "MEDIUM") + " PRIORITY";
+
+        // SAFE REASONS RENDER
+        const reasonsList = document.getElementById("rec-reasons");
+        reasonsList.innerHTML = "";
+
+        if (ai.reasons && ai.reasons.length > 0) {
+            ai.reasons.forEach(r => {
+                const li = document.createElement("li");
+                li.innerText = r;
+                reasonsList.appendChild(li);
+            });
+        } else {
+            const li = document.createElement("li");
+            li.innerText =
+                "AI analysed overall classroom trends and performance indicators.";
+            reasonsList.appendChild(li);
+        }
+
+        /* ===========================
+           5️⃣ FETCH TRAINING CONTENT
+        ============================ */
+        const qContent = query(
+            collection(db, "content"),
+            where("category", "==", ai.category),
+            where("district", "==", district),
+            limit(1) // ❗ no orderBy → no index error
+        );
+
+        const contentSnap = await getDocs(qContent);
+
+        if (!contentSnap.empty) {
+            const data = contentSnap.docs[0].data();
+            document.getElementById("module-title").innerText = data.title;
+            document.getElementById("training-url").href = data.url;
+        } else {
+            document.getElementById("training-content").classList.add("hidden");
+            document.getElementById("no-content").classList.remove("hidden");
+        }
+
+    } catch (err) {
+        console.error("AI PAGE ERROR:", err);
+        document.getElementById("loading").innerText =
+            "Something went wrong. Please try again.";
+    }
+});
+</script>
+
+</body>
+</html>

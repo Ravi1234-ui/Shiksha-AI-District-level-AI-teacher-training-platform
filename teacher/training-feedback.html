@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Post-Training Feedback | Shiksha AI</title>
+
+    <!-- GLOBAL STYLES -->
+    <link rel="stylesheet" href="../css/style.css">
+    <link rel="stylesheet" href="../css/dashboard.css">
+
+    <!-- FEEDBACK PAGE STYLE -->
+    <link rel="stylesheet" href="../css/training-feedback.css">
+
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
+</head>
+
+<body>
+
+<nav>
+    <div class="logo">SHIKSHA AI</div>
+    <button class="btn" style="width:auto;" onclick="location.href='dashboard.html'">
+        ⬅ Back to Dashboard
+    </button>
+</nav>
+
+<div class="container">
+
+    <div class="feedback-header">
+        <h2>📝 Post-Training Reflection</h2>
+        <p>
+            Share your experience so DIET can improve future training
+            for teachers in your district.
+        </p>
+    </div>
+
+    <div class="feedback-card">
+
+        <label for="rating">
+            How relevant was the training content to your classroom needs?
+        </label>
+        <select id="rating">
+            <option value="5">⭐⭐⭐⭐⭐ Excellent & Highly Relevant</option>
+            <option value="4">⭐⭐⭐⭐ Very Good</option>
+            <option value="3">⭐⭐⭐ Average</option>
+            <option value="2">⭐⭐ Needs Improvement</option>
+            <option value="1">⭐ Not Helpful</option>
+        </select>
+
+        <label for="comment">
+            What did this training help you with? (or what was missing?)
+        </label>
+        <textarea
+            id="comment"
+            placeholder="Example: The video helped me manage multilingual students, but more real classroom examples would help."
+        ></textarea>
+
+        <button class="btn btn-success" style="margin-top:25px;" onclick="submitFeedback()">
+            Submit Feedback to DIET
+        </button>
+
+        <div class="feedback-note">
+            Your response is visible only to your District DIET officials.
+        </div>
+
+    </div>
+</div>
+
+<script type="module">
+import { db, auth } from '../js/config/firebase-init.js';
+import {
+    doc, getDoc, addDoc, collection, serverTimestamp
+} from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+import { onAuthStateChanged }
+from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
+
+onAuthStateChanged(auth, (user) => {
+    if (!user) {
+        window.location.href = "../index.html";
+    }
+});
+
+window.submitFeedback = async () => {
+    const rating = document.getElementById('rating').value;
+    const comment = document.getElementById('comment').value.trim();
+
+    if (!comment) {
+        alert("Please share a brief comment. It helps DIET improve training quality.");
+        return;
+    }
+
+    try {
+        // Fetch teacher profile
+        const userDoc = await getDoc(doc(db, "users", auth.currentUser.uid));
+        const userData = userDoc.data();
+
+        // Store feedback (ENHANCED but backward-compatible)
+        await addDoc(collection(db, "feedback"), {
+    teacherId: auth.currentUser.uid,
+    teacherName: userData.name,
+    teacherEmail: userData.email,   // ✅ NEW
+    district: userData.district.trim().toLowerCase(), // ✅ NORMALIZED
+    rating: parseInt(rating),
+    comment: comment,
+    timestamp: serverTimestamp()
+});
+
+
+        alert("Thank you! Your feedback has been sent to DIET.");
+        window.location.href = "dashboard.html";
+
+    } catch (e) {
+        console.error("Feedback Error:", e);
+        alert("Unable to submit feedback. Please try again.");
+    }
+};
+</script>
+
+</body>
+</html>
